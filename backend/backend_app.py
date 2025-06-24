@@ -10,7 +10,7 @@ POSTS = [
 ]
 
 
-@app.route('/api/posts', methods=['GET'])
+@app.route('/api/posts')
 def get_posts():
     return jsonify(POSTS)
 
@@ -53,6 +53,7 @@ def update_post(id):
         return jsonify({"error": "Post not found."}), 404
 
     data = request.get_json()
+    print(data)
     title = data.get('title')
     content = data.get('content')
 
@@ -62,6 +63,23 @@ def update_post(id):
         post_to_update['content'] = content
 
     return jsonify(post_to_update), 200
+
+
+@app.route('/api/posts/search')
+def search_post():
+    title_query = request.args.get('title')
+    content_query = request.args.get('content')
+
+    results = POSTS
+
+    if title_query:
+        results = [post for post in results if title_query.lower() in post['title'].lower()]
+    
+    if content_query:
+        results = [post for post in results if content_query.lower() in post['content'].lower()]
+    
+    return jsonify(results), 200
+    
 
 
 if __name__ == '__main__':
